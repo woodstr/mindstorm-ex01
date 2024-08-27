@@ -2,7 +2,7 @@ import asyncio
 import time
 
 # from https://air.imag.fr/images/1/1b/ImperialMarch.pde.txt and GitHub copilot
-async def beep_imperial_march(ev3):
+def beep_imperial_march(ev3):
     # define the notes
     c = 261
     d = 294

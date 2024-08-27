@@ -48,4 +48,4 @@ if __name__ == "__main__":
     # point at an angle relatively to the starting direction of 30 degrees
 
     # end beep
-    ev3.speaker.say('Luke, I am your father')
+    ev3.speaker.say('If you only knew the power of the dark side.')
