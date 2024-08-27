@@ -12,6 +12,7 @@ def forward(circumf, distance, l_port, r_port):
     Move the robot forward a certain distance
      - circumf: circumference of the wheels
      - distance: distance to move forward
+     - l_port/r_port: left and right motor ports
     
     Degrees to turn is calculated based on wheel circumference and distance to move forward.
     E.g. if circumference of wheel is 20cm and distance to move forward is 40cm, then the wheels need to turn 2 rotations.
