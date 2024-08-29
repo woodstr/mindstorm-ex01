@@ -1,4 +1,3 @@
-import asyncio
 import time
 
 # from https://air.imag.fr/images/1/1b/ImperialMarch.pde.txt and GitHub copilot
@@ -109,6 +108,80 @@ def beep_imperial_march(ev3):
     ev3.speaker.beep(a, 500)
     ev3.speaker.beep(f, 375)
     ev3.speaker.beep(c, 125)
+    ev3.speaker.beep(a, 1000)
+
+    return
+
+def beep_imperial_p1(ev3):
+    # define the notes
+    c = 261
+    d = 294
+    e = 329
+    f = 349
+    g = 391
+    gS = 415
+    a = 440
+    aS = 455
+    b = 466
+    cH = 523
+    cSH = 554
+    dH = 587
+    dSH = 622
+    eH = 659
+    fH = 698
+    fSH = 740
+    gH = 784
+    gSH = 830
+    aH = 880
+
+    # play imperial march!
+
+    # start
+    ev3.speaker.beep(a, 500)
+    ev3.speaker.beep(a, 500)
+    ev3.speaker.beep(a, 500)
+    ev3.speaker.beep(f, 350)
+    ev3.speaker.beep(cH, 150)
+
+    ev3.speaker.beep(a, 500)
+    ev3.speaker.beep(f, 350)
+    ev3.speaker.beep(cH, 150)
+    ev3.speaker.beep(a, 1000)
+
+    return
+
+def beep_imperial_p2(ev3):
+    # define the notes
+    c = 261
+    d = 294
+    e = 329
+    f = 349
+    g = 391
+    gS = 415
+    a = 440
+    aS = 455
+    b = 466
+    cH = 523
+    cSH = 554
+    dH = 587
+    dSH = 622
+    eH = 659
+    fH = 698
+    fSH = 740
+    gH = 784
+    gSH = 830
+    aH = 880
+
+    # play imperial march!
+    ev3.speaker.beep(eH, 500)
+    ev3.speaker.beep(eH, 500)
+    ev3.speaker.beep(eH, 500)
+    ev3.speaker.beep(fH, 350)
+    ev3.speaker.beep(cH, 150)
+
+    ev3.speaker.beep(gS, 500)
+    ev3.speaker.beep(f, 350)
+    ev3.speaker.beep(cH, 150)
     ev3.speaker.beep(a, 1000)
 
     return
