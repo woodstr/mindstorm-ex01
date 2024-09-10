@@ -31,16 +31,30 @@ def follow_line():
         robot.drive(DRIVE_SPEED, 0)
         logs['decision'].append('straight')
 
-    # if left black, right white, middle black: turn left
-    elif left_value < THRESHOLD and right_value > THRESHOLD:
-        
+    # if middle black, left black, right white: turn left
+    elif middle_value < THRESHOLD and left_value < THRESHOLD and right_value > THRESHOLD:
         robot.drive(DRIVE_SPEED, TURN_RATE)
         logs['decision'].append('left')
 
-    # if left white, right black: turn right
-    elif right_value < THRESHOLD and left_value > THRESHOLD:
+    # if middle white, left black, right white: turn left
+    elif middle_value > THRESHOLD and left_value < THRESHOLD and right_value > THRESHOLD:
+        robot.drive(DRIVE_SPEED, TURN_RATE)
+        logs['decision'].append('left')
+
+    # if middle black, left white, right black: turn right
+    elif middle_value < THRESHOLD and right_value < THRESHOLD and left_value > THRESHOLD:
         robot.drive(DRIVE_SPEED, -TURN_RATE)
         logs['decision'].append('right')
+
+    # if middle white, left white, right black: turn right
+    elif middle_value > THRESHOLD and left_value > THRESHOLD and right_value < THRESHOLD:
+        robot.drive(DRIVE_SPEED, -TURN_RATE)
+        logs['decision'].append('right')
+
+    # if middle white, left black, right black: stop (intersection without straight)
+    elif middle_value > THRESHOLD and right_value < THRESHOLD and left_value < THRESHOLD:
+        robot.stop()
+        logs['decision'].append('stop (intersection without straight)')
 
     # if all sensors white: go forward (slow)
     elif left_value > THRESHOLD and right_value > THRESHOLD and middle_value > THRESHOLD:
@@ -147,25 +161,24 @@ if __name__ == "__main__":
     TURN_RATE = 10
 
     # Main loop
-    # count = 0 
-    # while True:
-    #     if count == 1:
-    #         break
+    count = 0 
+    while True:
+        if count == 1:
+            break
 
-    #     # determine if we are at an intersection
-    #     intersection = detect_intersection()
+        # determine if we are at an intersection
+        intersection = detect_intersection()
 
-    #     # navigate intersection if exists
-    #     if intersection:
-    #         navigate_intersection(intersection)
-    #         count += 1
-    #         wait(2000) # buffer time to let us realise the decision
-    #     else:
-    #         # no intersection just follow the line
-    #         follow_line()
+        # navigate intersection if exists
+        if intersection:
+            navigate_intersection(intersection)
+            count += 1
+            wait(2000) # buffer time to let us realise the decision
+        else:
+            # no intersection just follow the line
+            follow_line()
 
-    forward(12, 10, 500, l_port=Port.A, r_port=Port.C, wait=True)
+    # forward(12, 10, 500, l_port=Port.A, r_port=Port.C, wait=True)
     
-    # with open('logs.pkl', 'wb') as f:
-    #     pkl.dump(logs, f)
+    # print logs since filesaving goes to ev3
     print(logs)
