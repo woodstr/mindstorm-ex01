@@ -1,0 +1,10 @@
+t1
+XXXXXXXXX
+X@      X
+X.X$X X X
+X       X
+X X$X X X
+X .     X
+X X X X X
+X*      X
+XXXXXXXXX
