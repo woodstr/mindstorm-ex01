@@ -1,6 +1,7 @@
 from collections import deque
 
 # Direction mappings and initial state
+# Defines the possible directions and their movements.
 DIRECTIONS = ['down', 'left', 'up', 'right']
 MOVE_DELTA = {
     'down': (1, 0),
@@ -48,6 +49,8 @@ def bfs_solver(robot_pos, walls, cans, goals):
         if set(current_cans) == goals:  # Check if all cans are on goals
             return path
 
+
+        #Moves left and right change facing direction and forward changes position + 1 towards facing direction
         for move in ['left', 'right', 'forward']:
             if move == 'left':
                 new_direction = DIRECTIONS[(DIRECTIONS.index(direction) - 1) % 4]
@@ -64,17 +67,22 @@ def bfs_solver(robot_pos, walls, cans, goals):
 
                 # Check if the robot moves into a can
                 if new_robot_pos in current_cans:
-                    new_can_pos = (new_robot_pos[0] + dy, new_robot_pos[1] + dx)
-                    if not is_valid_pos(new_can_pos, walls) or new_can_pos in current_cans:
+                    new_can_pos = (new_robot_pos[0] + dy, new_robot_pos[1] + dx) 
+
+                    # If you try to push into wall or another can then skip 
+                    if not is_valid_pos(new_can_pos, walls) or new_can_pos in current_cans: 
                         continue
                     # Create new state with the pushed can
                     new_cans = tuple(new_can_pos if can == new_robot_pos else can for can in current_cans)
                 else:
+                    #continue without change in can positions
                     new_cans = current_cans
                 
                 new_state = (new_robot_pos, new_cans, direction)
 
             if new_state not in visited:
+                print("New state")
+                print (new_state)
                 visited.add(new_state)
                 queue.append((new_state, path + [move]))
 
@@ -85,16 +93,27 @@ def solve_sokoban(sokoban_map):
     robot_pos, walls, cans, goals = parse_map(sokoban_map)
     return bfs_solver(robot_pos, walls, cans, goals)
 
-# Example map (simplified Sokoban puzzle)
+# Example map 
+# sokoban_map = [
+#     "XXXXXXX",
+#     "X@  X",
+#     "X X X",
+#     "X $ X",
+#     "X  .X",
+#     "XXXXXXX"
+# ]
 sokoban_map = [
-    "XXXXXXX",
-    "X@  X",
-    "X   X",
-    "X $ X",
-    "X . X",
-    "XXXXXXX"
+    "XXXXXXXXX",
+    "X@      X",
+    "X.X$X X X",
+    "X       X",
+    "X X$X X X",
+    "X .     X",
+    "X X X X X",
+    "X*      X",
+    "XXXXXXXXX"
 ]
-
 # Solve the puzzle and print the set of instructions
 solution = solve_sokoban(sokoban_map)
 print(solution if solution else "No solution found.")
+
