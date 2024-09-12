@@ -21,76 +21,79 @@ def follow_line(DRIVE_SPEED):
     left_value = left_sensor.reflection()
     right_value = right_sensor.reflection()
 
+    print('LEFT: ', left_value)
+    print('RIGHT: ', right_value)
+
     # log values
     logs['action'].append('follow_line')
     logs['l_sensor'].append(left_value)
     logs['r_sensor'].append(right_value)
 
-    # >= / <= used to avoid missing equals case
+    difference = left_value - right_value
 
-    # if left white, right white: go straight
-    if left_value >= THRESHOLD and right_value >= THRESHOLD:
-        robot.drive(DRIVE_SPEED, 0)
-        logs['decision'].append('straight')
-
-    # if left black, right white: turn left
-    elif left_value <= THRESHOLD and right_value >= THRESHOLD:
-        robot.drive(DRIVE_SPEED, TURN_RATE)
-        logs['decision'].append('left')
-
-    # if left white, right black: turn right
-    elif left_value >= THRESHOLD and right_value <= THRESHOLD:
-        robot.drive(DRIVE_SPEED, -TURN_RATE)
-        logs['decision'].append('right')
-
-    # if left black, right black: stop (intersection)
-    elif left_value <= THRESHOLD and right_value <= THRESHOLD:
+    # if sensor values below threshold, stop (intersection)
+    if left_value <= THRESHOLD and right_value <= THRESHOLD:
         robot.stop()
         logs['decision'].append('stop (intersection)')
-
-    # SHOULD EVER GET HERE
-    else:
-        robot.stop()
-        print('WTF')
-        logs['decision'].append('stop (wtf)')
-
-def detect_intersection():
-    left_value = left_sensor.reflection()
-    right_value = right_sensor.reflection()
-
-    # log values
-    logs['action'].append('detect_intersection')
-    logs['l_sensor'].append(left_value)
-    logs['r_sensor'].append(right_value)
-
-    # intersection if all black
-    if left_value < THRESHOLD and right_value < THRESHOLD:
-        logs['decision'].append('intersection')
         return True
+
+    # turn left (left sensor more black)
+    elif difference < 0:
+        robot.drive(DRIVE_SPEED, TURN_RATE)
+    # turn right (right sensor more black)
+    elif difference > 0:
+        robot.drive(DRIVE_SPEED, -TURN_RATE)
+    # keep last direction
+    else:
+        print('Continue with last drive function')
     
-    # no intersection
-    logs['decision'].append('no intersection')
     return False
 
 # need to change based on planner
 def navigate_intersection(instruction):
-    wait(1000)
+    left_value = left_sensor.reflection()
+    right_value = right_sensor.reflection()
+    difference = left_value - right_value
+
+    time.sleep(1)
     if instruction == 'straight':
         robot.straight(-100)
     elif instruction == 'left':
-        robot.turn(90)
+        robot.straight(-50)
+        robot.turn(65)
+        robot.straight(-50)
+        while True:
+            robot.turn(5)
+            if abs(difference) < 5:
+                break
     elif instruction == 'right':
-        robot.turn(-90)
-    wait(1000)
+        robot.straight(-50)
+        robot.turn(-65)
+        robot.straight(-50)
+        while True:
+            robot.turn(-5)
+            if abs(difference) < 5:
+                break
+    elif instruction == 'back':
+        go_back()
+    time.sleep(1)
 
     # checks for if sensors are still on intersection?
-    while True:
-        if not detect_intersection():
-            break
-        print('still on intersection! HELP!')
-        time.sleep(10)
+    # while True:
+    #     if not detect_intersection():
+    #         break
+    #     print('still on intersection! HELP!')
+    #     time.sleep(2)
+
     return
 
+def go_back():
+    # TODO: back up, 180 turn, go back to intersection
+
+    robot.straight(140)
+    robot.turn(140)
+    robot.straight(70)
+    return
 
 if __name__ == "__main__":
 
@@ -106,19 +109,19 @@ if __name__ == "__main__":
     robot = DriveBase(left_motor, right_motor, wheel_diameter=81.169, axle_track=255)
 
     # Adjusted Threshold
-    THRESHOLD = 10
+    THRESHOLD = 4
     DRIVE_SPEED = -50
     TURN_RATE = 10
 
     # Instruction list
-    instructions = ['left', 'right', 'straight']
+    instructions = ['left', 'left', 'left', 'left', 'straight', 'straight', 'back']
     print('EV3 Python Starts!')
+
     while instructions:
-        if detect_intersection():
+        intersection = follow_line(DRIVE_SPEED)
+        if intersection:
             instruction = instructions.pop(0)
             navigate_intersection(instruction)
-        else:
-            follow_line(DRIVE_SPEED)
 
     # debug only
     # forward(12, 10, 500, l_port=Port.A, r_port=Port.C, wait=True)
