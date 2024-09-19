@@ -157,15 +157,67 @@ test2_real_map = [
     "XXXXXXXXX"
 ]
 
+test3_real_map = [
+    "XXXXXXXXX",
+    "X@      X",
+    "X X X X X",
+    "X. $    X",
+    "X X X X X",
+    "X  $   .X",
+    "X X X X X",
+    "X*      X",
+    "XXXXXXXXX"
+]
+
+test4_real_map = [
+    "XXXXXXXXX",
+    "X@     .X",
+    "X X X X X",
+    "X  * * $X",
+    "X X X X X",
+    "X  $   .X",
+    "X X X X X",
+    "X       X",
+    "XXXXXXXXX"
+]
+
+test5_real_map = [
+    "XXXXXXXXX",
+    "X@     .X",
+    "X X X X X",
+    "X      $X",
+    "X X X X X",
+    "X  $   .X",
+    "X X X X X",
+    "X       X",
+    "XXXXXXXXX"
+]
+
+test6_real_map = [
+    "XXXXXXXXX",
+    "X@   $ .X",
+    "X X X X X",
+    "X$      X",
+    "X X X X X",
+    "X  $   .X",
+    "X X X X X",
+    "X. $   .X",
+    "XXXXXXXXX"
+]
+
 # Solve the puzzle and print the set of instructions
 solution = solve_sokoban(test2_real_map)
-# print()
-# print(solution)
-# print()
+print()
+print(solution)
+print()
 
 
 
 # Format the solution!
+
+# Remove first forward as robot starts at the intersection
+if solution[0] == 'forward':
+    solution = solution[1:]
 
 solution = solution + [None]  # Add padding to prevent out of index error
 
@@ -179,9 +231,10 @@ for idx, move in enumerate(solution):
         solution[idx] = '180'
         solution[idx + 1] = None
 solution = [move for move in solution if move is not None] # remove Nones from the list
-# print(solution)
-# print()
+print(solution)
+print()
 
+solution = solution + [None]*5  # Add padding to prevent out of index error
 # Then, format left and right turns.
 # Our robots left turns are the same as [left, forward, forward]
 # Our robots right turns are the same as [right, forward, forward]
@@ -197,9 +250,10 @@ for idx, move in enumerate(solution):
         solution[idx+1] = None
         solution[idx+2] = None
 solution = [move for move in solution if move is not None] # remove Nones from the list
-# print(solution)
-# print()
+print(solution)
+print()
 
+solution = solution + [None]*5  # Add padding to prevent out of index error
 # Then get rid of extra forward after a 180
 for idx, move in enumerate(solution):
     # If the move is None, skip it as we have already processed it
@@ -209,8 +263,8 @@ for idx, move in enumerate(solution):
     elif move == '180' and solution[idx + 1] == 'forward':
         solution[idx + 1] = None
 solution = [move for move in solution if move is not None] # remove Nones from the list
-# print(solution)
-# print()
+print(solution)
+print()
 
 # Then get rid of extra forwards on consecutive forwards
 # # Count number of moves, if 6 or 5 reduce to 3, if 3 or 4 reduce to 2, if 1 or 2 reduce to 1
@@ -222,18 +276,18 @@ for idx, move in enumerate(solution):
         continue
 
     elif move == 'forward':
-        # if 6 forwards, then reduce to 3
+        # if 6 forwards, then reduce to 2
         if [solution[idx+1], solution[idx+2], solution[idx+3], solution[idx+4], solution[idx+5]] == ['forward', 'forward', 'forward', 'forward', 'forward']:
             # add moves to formatted solution and delete remaining forwards from next checks
-            formatted_solution = formatted_solution + ['forward']*3
+            formatted_solution = formatted_solution + ['forward']*2
             solution[idx+1] = None
             solution[idx+2] = None
             solution[idx+3] = None
             solution[idx+4] = None
             solution[idx+5] = None
-        # if 5 forwards, reduce to 3
+        # if 5 forwards, reduce to 2
         elif [solution[idx+1], solution[idx+2], solution[idx+3], solution[idx+4]] == ['forward', 'forward', 'forward', 'forward']:
-            formatted_solution = formatted_solution + ['forward']*3
+            formatted_solution = formatted_solution + ['forward']*2
             solution[idx+1] = None
             solution[idx+2] = None
             solution[idx+3] = None
@@ -244,11 +298,17 @@ for idx, move in enumerate(solution):
             solution[idx+1] = None
             solution[idx+2] = None
             solution[idx+3] = None
-        # if 3 forwards, reduce to 2
+        # if 3 forwards, reduce to 1 (unless we just made a turn! then reduce to 2)
         elif [solution[idx+1], solution[idx+2]] == ['forward', 'forward']:
-            formatted_solution = formatted_solution + ['forward']*2
-            solution[idx+1] = None
-            solution[idx+2] = None
+            if formatted_solution and formatted_solution[-1] in ['left', 'right']:
+                formatted_solution = formatted_solution + ['forward']*2
+                solution[idx+1] = None
+                solution[idx+2] = None
+            else:
+                formatted_solution.append('forward')
+                solution[idx+1] = None
+                solution[idx+2] = None
+
         # if 2 forwards, reduce to 1
         elif solution[idx+1] == 'forward':
             formatted_solution.append('forward')
@@ -259,5 +319,10 @@ for idx, move in enumerate(solution):
     # if move was no a forward then just add it
     else:
         formatted_solution.append(move)
+
+# Remove first left and print placement message if first move is left
+if formatted_solution[0] == 'left':
+    formatted_solution = formatted_solution[1:]
+    print("Place robot facing left!!!")
 
 print(formatted_solution)
